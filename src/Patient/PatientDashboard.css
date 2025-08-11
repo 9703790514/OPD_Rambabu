@@ -1,0 +1,104 @@
+/* Global App Look */
+body {
+  background: linear-gradient(135deg, #f4f6f9 0%, #eef3f8 100%);
+  font-family: 'Roboto', sans-serif;
+  color: #2c3e50;
+  margin: 0;
+  padding: 0;
+}
+
+/* Material UI Paper Enhancements */
+.MuiPaper-root {
+  border-radius: 14px !important;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06) !important;
+}
+
+/* Card Styling */
+.MuiCard-root {
+  border-radius: 14px;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.MuiCard-root:hover {
+  transform: translateY(-6px);
+  box-shadow: 0px 12px 24px rgba(0,0,0,0.12);
+}
+
+/* Buttons */
+.MuiButton-root {
+  border-radius: 25px !important;
+  padding: 10px 22px;
+  text-transform: none;
+  font-weight: bold;
+  background: linear-gradient(135deg, #1976d2, #42a5f5) !important;
+  color: white !important;
+  box-shadow: 0px 4px 10px rgba(25, 118, 210, 0.3);
+  transition: all 0.25s ease-in-out;
+}
+.MuiButton-root:hover {
+  background: linear-gradient(135deg, #1565c0, #1e88e5) !important;
+  box-shadow: 0px 6px 14px rgba(25, 118, 210, 0.35);
+}
+
+/* Accordions */
+.MuiAccordion-root {
+  border-radius: 10px !important;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0px 3px 12px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+/* Quick Action Tiles */
+.quick-action-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f1f9ff, #e6f2ff);
+  box-shadow: 0px 3px 12px rgba(0,0,0,0.05);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.quick-action-card:hover {
+  transform: scale(1.06);
+  background: linear-gradient(135deg, #e0f2ff, #cce4ff) !important;
+}
+
+/* Sidebar Navigation */
+.MuiListItemButton-root {
+  border-radius: 10px;
+  margin: 4px 8px;
+  transition: background-color 0.25s ease, transform 0.2s ease;
+}
+.MuiListItemButton-root:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+  transform: translateX(4px);
+}
+.MuiListItemButton-root.Mui-selected {
+  background-color: rgba(25, 118, 210, 0.15);
+  font-weight: 600;
+}
+
+/* Welcome Banner Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.banner-animation {
+  animation: fadeInUp 0.7s ease-in-out;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  box-shadow: 0px 6px 18px rgba(0,0,0,0.08);
+  border-radius: 14px;
+}
+
+/* Smooth transitions for everything */
+* {
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}

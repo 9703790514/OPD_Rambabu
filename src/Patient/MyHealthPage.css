@@ -1,0 +1,232 @@
+/* =======================
+   Layout & Container
+   ======================= */
+.myhealth-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  background: linear-gradient(180deg, #f9fbfd 0%, #f5f7fa 100%);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+@media (min-width: 768px) {
+  .myhealth-container {
+    padding: 32px;
+  }
+}
+
+/* =======================
+   Header Title
+   ======================= */
+.myhealth-title {
+  font-weight: 700;
+  color: #0e4a9e;
+  text-align: center;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  gap: 12px;
+  letter-spacing: 0.5px;
+}
+
+.myhealth-title svg {
+  font-size: 42px;
+  vertical-align: middle;
+  color: #1a73e8;
+}
+
+/* =======================
+   Card Styling
+   ======================= */
+.myhealth-card {
+  border-radius: 18px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  overflow: hidden;
+}
+
+.myhealth-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
+}
+
+.myhealth-card-content {
+  padding: 26px;
+}
+
+@media (min-width: 768px) {
+  .myhealth-card-content {
+    padding: 34px;
+  }
+}
+
+/* =======================
+   Avatar
+   ======================= */
+.myhealth-avatar {
+  background: linear-gradient(135deg, #1a73e8, #2196f3);
+  width: 68px !important;
+  height: 68px !important;
+  margin-right: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* =======================
+   Info Row
+   ======================= */
+.myhealth-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.myhealth-info strong {
+  margin-right: 4px;
+  color: #111827;
+}
+
+.myhealth-info svg {
+  margin-right: 8px;
+  color: #1a73e8;
+}
+
+/* =======================
+   Loader
+   ======================= */
+.myhealth-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 0;
+  color: #1a73e8;
+  font-size: 1.2rem;
+}
+
+/* =======================
+   Appointment Grid
+   ======================= */
+.myhealth-appointments {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+@media (min-width: 600px) {
+  .myhealth-appointments {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .myhealth-appointments {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* =======================
+   Appointment Card
+   ======================= */
+.myhealth-appt-card {
+  border-radius: 18px;
+  background-color: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.myhealth-appt-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* =======================
+   Status Chips
+   ======================= */
+.status-confirmed {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.status-pending {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.status-cancelled {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.status-scheduled {
+  background-color: #2196f3 !important;
+  color: white !important;
+}
+
+.status-completed {
+  background-color: #0e4a9e !important;
+  color: white !important;
+}
+
+.status-chip {
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* =======================
+   Buttons
+   ======================= */
+.myhealth-btn {
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  padding: 8px 18px !important;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.myhealth-btn:hover {
+  transform: scale(1.05);
+}
+
+/* =======================
+   Alerts
+   ======================= */
+.myhealth-alert {
+  border-radius: 12px !important;
+  font-size: 0.95rem;
+  padding: 12px 16px;
+}
+
+/* =======================
+   Fade-in Animation
+   ======================= */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
