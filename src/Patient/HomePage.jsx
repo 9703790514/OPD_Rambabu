@@ -2051,12 +2051,16 @@ useEffect(() => {
                       return (
                         <Grid item key={doctor.id || doctor._id} xs={12} sm={6} lg={4}>
                           <Card
+
+                        
                             elevation={16}
                             onClick={() => handleDoctorClick(doctor)}
                             sx={{
                               cursor: 'pointer',
                               height: '100%',
                               display: 'flex',
+                              width : "450px",
+                              height : "350px",
                               flexDirection: 'column',
                               position: 'relative',
                               overflow: 'visible',
@@ -2085,6 +2089,8 @@ useEffect(() => {
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 gap: 3,
+                                width : "350px",
+                                height : "250px",
                                 position: 'relative',
                                 zIndex: 1,
                               }}
@@ -2326,6 +2332,7 @@ useEffect(() => {
                         textAlign: 'center',
                         backgroundColor: '#fef2f2',
                         border: '1px solid #fecaca',
+                        
                         borderRadius: 3,
                       }}
                     >
@@ -2364,6 +2371,8 @@ useEffect(() => {
                             elevation={4}
                             sx={{
                               borderRadius: 3,
+                              width : "300px",
+                              height : "350px",
                               border: `2px solid ${
                                 appt.status?.toLowerCase() === 'confirmed' ? '#10b981' :
                                 appt.status?.toLowerCase() === 'pending' ? '#f59e0b' :

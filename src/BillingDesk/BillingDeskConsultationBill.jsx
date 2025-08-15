@@ -4355,7 +4355,7 @@ export default function BillingDesk() {
               // Fetch doctor details
               try {
                 const doctor = await fetchData(`http://localhost:2005/api/doctors/${appt.doctorId}`);
-                doctorFullName = `Dr. ${doctor.firstName} ${doctor.lastName}`;
+                doctorFullName = ` ${doctor.firstName} ${doctor.lastName}`;
                 doctorConsultationFee = doctor.consultationFee?.toString() ?? '250.00'; // Default fee if not found
                 doctorSpecialization = doctor.specialization ?? 'General Physician';
               } catch (e) {
@@ -4411,7 +4411,7 @@ export default function BillingDesk() {
           // Fetch doctor details
           try {
             const doctor = await fetchData(`http://localhost:2005/api/doctors/${appt.doctorId}`);
-            doctorFullName = `Dr. ${doctor.firstName} ${doctor.lastName}`;
+            doctorFullName = `${doctor.firstName} ${doctor.lastName}`;
             doctorConsultationFee = doctor.consultationFee?.toString() ?? '250.00';
             doctorSpecialization = doctor.specialization ?? 'General Physician';
           } catch (e) {
@@ -4717,110 +4717,123 @@ export default function BillingDesk() {
   // Component to render the list of appointments
   const renderAppointmentList = () => (
     <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        minHeight: '100vh',
-        p: { xs: 2, sm: 4 }, // Responsive padding
-        bgcolor: '#f8f9fa', // Lighter gray background
-      }}
-    >
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        sx={{
-          color: '#00796b',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          mb: 4,
-          fontSize: { xs: '1.8rem', sm: '2.5rem' }, // Responsive font size
-        }}
-      >
-        Consultation Billing Desk 🧑‍⚕️
-      </Typography>
-      <Typography variant="body1" color="text.secondary" align="center" sx={{ maxWidth: 600, mb: 4 }}>
-        Select an appointment from the list below to generate a new bill.
-      </Typography>
+  sx={{
+    width: '100%',
+    maxWidth: '1600px',
+    bgcolor: '#f9fafb', // Light neutral background for contrast
+    borderRadius: 4,
+    boxShadow: '0 16px 40px rgba(0, 105, 92, 0.1)', // Softer, bigger shadow for container
+    p: { xs: 4, sm: 6 },
+    mx: 'auto',
+  }}
+>
+  <Typography
+    variant="h5"
+    component="h2"
+    gutterBottom
+    sx={{
+      color: '#004d40',
+      mb: 5,
+      fontWeight: '800',
+      borderBottom: '4px solid #00796b',
+      pb: 2,
+      letterSpacing: '0.08em',
+      fontSize: { xs: '2rem', sm: '2.25rem' },
+      textTransform: 'uppercase',
+      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      textShadow: '0 2px 6px rgba(0,0,0,0.1)',
+    }}
+  >
+    Recent Appointments
+  </Typography>
 
-      {listLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress sx={{ color: '#00796b' }} />
-        </Box>
-      )}
-
-      {listError && (
-        <Alert severity="error" sx={{ width: '100%', maxWidth: 700, mt: 2, borderRadius: 2 }}>
-          {listError}
-        </Alert>
-      )}
-
-      {!listLoading && !listError && appointments.length === 0 && (
-        <Alert severity="info" sx={{ width: '100%', maxWidth: 700, mt: 2, borderRadius: 2 }}>
-          No appointments found.
-        </Alert>
-      )}
-
-      {!listLoading && !listError && appointments.length > 0 && (
-        <Box sx={{ width: '100%', maxWidth: 700 }}>
-          <Typography variant="h5" component="h2" gutterBottom sx={{ color: '#333', mb: 2, fontWeight: '600' }}>
-            Recent Appointments
-          </Typography>
-          <List>
-            {appointments.map((appointment) => (
-              <StyledPaper key={appointment.id} sx={{ mb: 2 }}>
-                <ListItem
-                  disableGutters
-                  secondaryAction={
-                    <StyledButton
-                      variant="contained"
-                      onClick={() => handleGenerateBillClick(appointment)}
-                      sx={{ ml: { xs: 1, sm: 2 }, flexShrink: 0 }} // Responsive margin
-                    >
-                      Generate Bill
-                    </StyledButton>
-                  }
+  <Grid container spacing={4} justifyContent="center">
+    {appointments.map((appointment) => (
+      <Grid item xs={12} sm={6} md={4} key={appointment.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <StyledPaper
+          sx={{
+            width: 280,
+            height: 280,
+            cursor: 'pointer',
+            borderRadius: 4,
+            background: 'linear-gradient(145deg, #e0f2f1, #a7ccc9)', // Soft teal gradient
+            boxShadow: '12px 12px 24px #c3d9d7, -12px -12px 24px #ffffff', // Neumorphic shadow
+            transition: 'transform 0.35s ease, box-shadow 0.35s ease, background 0.3s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            '&:hover': {
+              transform: 'translateY(-10px) scale(1.03)',
+              boxShadow: '18px 18px 32px #9ac8c5, -18px -18px 32px #effcfb',
+              background: 'linear-gradient(145deg, #a7ccc9, #7ac2be)',
+            },
+          }}
+          onClick={() => handleGenerateBillClick(appointment)}
+          elevation={8}
+          aria-label={`Generate bill for ${appointment.patientFullName}`}
+          role="button"
+          tabIndex={0}
+          onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') handleGenerateBillClick(appointment); }}
+        >
+          <ListItem disableGutters sx={{ px: 3, py: 4 }}>
+            <ListItemText
+              sx={{ minWidth: 0 }}
+              primary={
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: '900',
+                    color: '#004d40',
+                    fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.12)',
+                  }}
                 >
-                  <ListItemText
-                    sx={{ p: { xs: 1.5, sm: 2 } }} // Responsive padding
-                    primary={
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: 'bold', color: '#333', fontSize: { xs: '1rem', sm: '1.25rem' } }}
-                      >
-                        {appointment.patientFullName}
-                      </Typography>
-                    }
-                    secondary={
-                      <>
-                        <Typography component="span" color="text.primary" sx={{ display: 'block' }}>
-                          <span style={{ fontWeight: 'bold' }}>Doctor:</span> {appointment.doctorFullName} ({appointment.doctorSpecialization})
-                        </Typography>
-                        <Typography component="span" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                          <span style={{ fontWeight: 'bold' }}>Date:</span> {appointment.formattedDate} | <span style={{ fontWeight: 'bold' }}>Time:</span> {appointment.formattedTime}
-                        </Typography>
-                        <Typography component="span" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                          <span style={{ fontWeight: 'bold' }}>Reason:</span> {appointment.reasonForVisit || 'N/A'}
-                        </Typography>
-                      </>
-                    }
-                  />
-                </ListItem>
-              </StyledPaper>
-            ))}
-          </List>
-        </Box>
-      )}
-    </Box>
+                  {appointment.patientFullName}
+                </Typography>
+              }
+              secondary={
+                <>
+                  <Typography
+                    component="span"
+                    color="#00695c"
+                    sx={{ display: 'block', mt: 1, fontSize: '1rem', fontWeight: 700 }}
+                  >
+                    Doctor: {appointment.doctorFullName} ({appointment.doctorSpecialization})
+                  </Typography>
+                  <Typography
+                    component="span"
+                    color="#004d40"
+                    sx={{ display: 'block', mt: 0.7, fontSize: '0.95rem', fontWeight: 600 }}
+                  >
+                    Date: {appointment.formattedDate} &nbsp; | &nbsp; Time: {appointment.formattedTime}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    color="#2e7d32"
+                    sx={{ display: 'block', mt: 1, fontSize: '0.9rem', fontStyle: 'italic', fontWeight: 600 }}
+                  >
+                    Reason: {appointment.reasonForVisit || 'N/A'}
+                  </Typography>
+                </>
+              }
+            />
+          </ListItem>
+        </StyledPaper>
+      </Grid>
+    ))}
+  </Grid>
+</Box>
+
   );
 
   // Component to render the billing form
   const renderBillingForm = () => {
     if (formLoading) {
       return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4, bgcolor: '#f8f9fa', minHeight: '100vh' }}>
+        <Box sx={{ display: 'flex', width :'15200px',  justifyContent: 'center', alignItems: 'center', p: 4, bgcolor: '#f8f9fa', minHeight: '100vh' }}>
           <CircularProgress sx={{ color: '#00796b' }} />
           <Typography variant="h6" sx={{ ml: 2, color: '#00796b' }}>Loading details...</Typography>
         </Box>
@@ -4830,7 +4843,7 @@ export default function BillingDesk() {
     if (formError) {
       return (
         <Box sx={{ p: 4, bgcolor: '#f8f9fa', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <Alert severity="error" sx={{ width: '100%', maxWidth: 600, mb: 3, borderRadius: 2 }}>
+          <Alert severity="error" sx={{ width: '100%', maxWidth: 1600, mb: 3, borderRadius: 2 }}>
             {formError}
           </Alert>
           <StyledButton variant="outlined" onClick={handleBackToList} sx={{ mt: 2 }}>
@@ -4842,7 +4855,7 @@ export default function BillingDesk() {
 
     if (!appointmentDetails) {
       return (
-        <Box sx={{ p: 4, bgcolor: '#f8f9fa', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ p: 4, bgcolor: 'blue', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>No appointment data found for billing.</Typography>
           <StyledButton variant="outlined" onClick={handleBackToList} sx={{ mt: 2 }}>
             <ArrowBackIcon sx={{ mr: 1 }} /> Back to Appointments
@@ -4852,7 +4865,7 @@ export default function BillingDesk() {
     }
 
     return (
-      <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: 800, mx: 'auto', bgcolor: '#f8f9fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: 1100, mx: 'auto', bgcolor: '#f8f9fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <Button onClick={handleBackToList} variant="text" sx={{ color: '#00796b', textTransform: 'none', fontWeight: 'bold' }}>
             <ArrowBackIcon sx={{ mr: 1 }} /> Back
@@ -4897,7 +4910,7 @@ export default function BillingDesk() {
           </CardContent>
         </Card>
 
-        <Card sx={{ boxShadow: 4, borderRadius: 3, flexGrow: 1, border: '1px solid #e0e0e0' }}>
+        <Card sx={{ boxShadow: 4, width : 1000, borderRadius: 3, flexGrow: 1, border: '1px solid #e0e0e0' }}>
           <CardContent>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#00796b', borderBottom: '2px solid #b2dfdb', pb: 1, mb: 2 }}>
               Bill Information
@@ -5184,3 +5197,1003 @@ export default function BillingDesk() {
 
   return selectedAppointmentId === null ? renderAppointmentList() : renderBillingForm();
 }
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import {
+//   Box,
+//   Typography,
+//   Paper,
+//   List,
+//   ListItem,
+//   ListItemText,
+//   Divider,
+//   CircularProgress,
+//   Alert,
+//   Button,
+//   Grid,
+//   TextField,
+//   Card,
+//   CardContent,
+//   Modal,
+//   IconButton,
+//   FormControl,
+//   InputLabel,
+//   Select,
+//   MenuItem,
+//   styled,
+//   useTheme,
+// } from '@mui/material';
+// import CloseIcon from '@mui/icons-material/Close';
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+// // PDF Libraries
+// import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas';
+// import SearchIcon from '@mui/icons-material/Search';
+// import InputAdornment from '@mui/material/InputAdornment';
+// // Styled Components with fresh vibrant styling
+// const StyledPaper = styled(Paper)(({ theme }) => ({
+//   background: 'linear-gradient(145deg, #fbe8e7, #ffd1c0)', // warm peach gradient
+//   boxShadow: '14px 14px 27px #d9b0a2, -14px -14px 27px #fff1eb', // soft warm neumorphic shadow
+//   borderRadius: 18,
+//   padding: theme.spacing(3),
+//   transition: 'transform 0.35s ease, box-shadow 0.35s ease, background 0.3s ease',
+//   cursor: 'pointer',
+//   display: 'flex',
+//   flexDirection: 'column',
+//   justifyContent: 'center',
+//   '&:hover': {
+//     transform: 'translateY(-10px) scale(1.04)',
+//     boxShadow: '20px 20px 35px #c99789, -20px -20px 35px #fff4ef',
+//     background: 'linear-gradient(145deg, #ffd1c0, #ffb299)',
+//   },
+// }));
+
+// const StyledButton = styled(Button)(({ theme }) => ({
+//   backgroundColor: '#ff7043', // coral orange
+//   color: '#ffffff',
+//   borderRadius: theme.shape.borderRadius,
+//   padding: '12px 24px',
+//   fontWeight: 'bold',
+//   letterSpacing: 0.5,
+//   textTransform: 'none',
+//   boxShadow: '0 4px 15px rgba(255, 112, 67, 0.4)',
+//   '&:hover': {
+//     backgroundColor: '#e64a19', // darker coral
+//     boxShadow: '0 6px 20px rgba(230, 74, 25, 0.5)',
+//   },
+//   '&:disabled': {
+//     backgroundColor: '#ffcdb8',
+//     color: '#fff6f0',
+//     boxShadow: 'none',
+//   },
+// }));
+
+// // Utility fetch function with delay
+// async function fetchData(url, options = {}) {
+//   await new Promise((r) => setTimeout(r, 500));
+//   const res = await fetch(url, options);
+//   if (!res.ok) {
+//     const msg = await res.text();
+//     throw new Error(msg || `Fetch error: ${res.status} ${res.statusText}`);
+//   }
+//   return res.json();
+// }
+
+// export default function BillingDesk() {
+//   const theme = useTheme();
+
+//   // States
+//   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+//   const [selectedBillId, setSelectedBillId] = useState(null);
+
+//   const [appointments, setAppointments] = useState([]);
+//   const [listLoading, setListLoading] = useState(false);
+//   const [listError, setListError] = useState(null);
+
+//   const [appointmentDetails, setAppointmentDetails] = useState(null);
+//   const [formLoading, setFormLoading] = useState(false);
+//   const [formError, setFormError] = useState(null);
+
+//   const [billDate] = useState(new Date().toISOString().split('T')[0]);
+//   const [totalAmount, setTotalAmount] = useState(0);
+//   const [amountPaid, setAmountPaid] = useState(0);
+//   const [balanceDue, setBalanceDue] = useState(0);
+//   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
+//   const [status, setStatus] = useState('Pending');
+//   const [billType] = useState('Consultation');
+//   const [billDocumentUrl, setBillDocumentUrl] = useState('');
+//   const [consultationFee, setConsultationFee] = useState('0.00');
+//   const [additionalCharges, setAdditionalCharges] = useState('0.00');
+//   const [notes, setNotes] = useState('');
+
+//   const [showSuccessModal, setShowSuccessModal] = useState(false);
+//   const [showPreviewModal, setShowPreviewModal] = useState(false);
+//   const [pdfContent, setPdfContent] = useState('');
+//   const [pdfBlob, setPdfBlob] = useState(null);
+//   const [uploading, setUploading] = useState(false);
+
+//   // Search query state
+//   const [searchQuery, setSearchQuery] = useState('');
+
+//   // Auto calculation for amounts
+//   useEffect(() => {
+//     const baseFee = parseFloat(consultationFee || 0) + parseFloat(additionalCharges || 0);
+//     const gst = baseFee * 0.18;
+//     const calculatedTotal = (baseFee + gst).toFixed(2);
+//     const amtPaid = parseFloat(amountPaid || 0);
+
+//     setTotalAmount(calculatedTotal);
+//     setBalanceDue((parseFloat(calculatedTotal) - amtPaid).toFixed(2));
+//   }, [consultationFee, additionalCharges, amountPaid]);
+
+//   // Load appointments list
+//   useEffect(() => {
+//     if (selectedAppointmentId === null) {
+//       async function loadAppointments() {
+//         try {
+//           setListLoading(true);
+//           setListError(null);
+//           const appts = await fetchData('http://localhost:2010/api/appointments');
+
+//           const enriched = await Promise.all(
+//             appts.map(async (appt) => {
+//               let patientFullName = 'Unknown Patient';
+//               let doctorFullName = 'Unknown Doctor';
+//               let doctorConsultationFee = 'N/A';
+//               let doctorSpecialization = '';
+
+//               try {
+//                 const patient = await fetchData(`http://localhost:2008/api/patients/${appt.patientId}`);
+//                 patientFullName = `${patient.first_name} ${patient.last_name}`;
+//               } catch {}
+
+//               try {
+//                 const doctor = await fetchData(`http://localhost:2005/api/doctors/${appt.doctorId}`);
+//                 doctorFullName = `${doctor.firstName} ${doctor.lastName}`;
+//                 doctorConsultationFee = (doctor.consultationFee ?? 250.00).toString();
+//                 doctorSpecialization = doctor.specialization ?? 'General Physician';
+//               } catch {}
+
+//               return {
+//                 ...appt,
+//                 patientFullName,
+//                 doctorFullName,
+//                 doctorConsultationFee,
+//                 doctorSpecialization,
+//                 formattedDate: new Date(appt.appointmentDate).toLocaleDateString(),
+//                 formattedTime: new Date(appt.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+//               };
+//             })
+//           );
+//           setAppointments(enriched);
+//         } catch (e) {
+//           setListError('Failed to load appointments. Please check the server status.');
+//         } finally {
+//           setListLoading(false);
+//         }
+//       }
+//       loadAppointments();
+//     }
+//   }, [selectedAppointmentId]);
+
+//   // Load appointment details for selected
+//   useEffect(() => {
+//     if (selectedAppointmentId !== null) {
+//       async function loadAppointmentDetails() {
+//         try {
+//           setFormLoading(true);
+//           setFormError(null);
+//           const appt = await fetchData(`http://localhost:2010/api/appointments/${selectedAppointmentId}`);
+
+//           let patientFullName = ' Routhu Rambabu';
+//           let doctorFullName = 'Dr Santosh Kumar';
+//           let doctorConsultationFee = '750.00';
+//           let doctorSpecialization = '';
+
+//           try {
+//             const patient = await fetchData(`http://localhost:2008/api/patients/${appt.patientId}`);
+//             patientFullName = `${patient.first_name} ${patient.last_name}`;
+//           } catch {}
+
+//           try {
+//             const doctor = await fetchData(`http://localhost:2005/api/doctors/${appt.doctorId}`);
+//             doctorFullName = `${doctor.firstName} ${doctor.lastName}`;
+//             doctorConsultationFee = (doctor.consultationFee ?? 250.00).toString();
+//             doctorSpecialization = doctor.specialization ?? 'General Physician';
+//           } catch {}
+
+//           setAppointmentDetails({
+//             ...appt,
+//             patientFullName,
+//             doctorFullName,
+//             doctorConsultationFee,
+//             doctorSpecialization,
+//             formattedDate: new Date(appt.appointmentDate).toLocaleDateString(),
+//             formattedTime: new Date(appt.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+//           });
+
+//           setConsultationFee(doctorConsultationFee);
+//           setAdditionalCharges('0.00');
+//           setNotes('');
+//           setPaymentMethod('Credit Card');
+//           setStatus('Pending');
+//           setBillDocumentUrl('');
+//           setAmountPaid(doctorConsultationFee);
+//         } catch (e) {
+//           setFormError('Failed to load appointment details. Please try again.');
+//         } finally {
+//           setFormLoading(false);
+//         }
+//       }
+//       loadAppointmentDetails();
+//     } else {
+//       setAppointmentDetails(null);
+//     }
+//   }, [selectedAppointmentId]);
+
+//   // Event handlers
+//   const handleGenerateBillClick = (appointment) => {
+//     setSelectedAppointmentId(appointment.id);
+//     setSelectedBillId(null);
+//     setBillDocumentUrl('');
+//     setFormError(null);
+//   };
+
+//   const handleBackToList = () => {
+//     setSelectedAppointmentId(null);
+//     setFormError(null);
+//     setSelectedBillId(null);
+//     setBillDocumentUrl('');
+//   };
+
+//   const handleCreateBill = async () => {
+//     if (!appointmentDetails) {
+//       alert('No appointment selected to create a bill.');
+//       return;
+//     }
+//     if (!billDocumentUrl) {
+//       alert('Please upload a bill document first before creating the bill.');
+//       return;
+//     }
+
+//     setFormLoading(true);
+//     setFormError(null);
+
+//     const baseFee = parseFloat(consultationFee || 0) + parseFloat(additionalCharges || 0);
+//     const gstRate = 0.18;
+//     const gstAmount = baseFee * gstRate;
+//     const finalTotalAmount = (baseFee + gstAmount).toFixed(2);
+
+//     const newBill = {
+//       patientId: appointmentDetails.patientId,
+//       appointmentId: selectedAppointmentId,
+//       billDate,
+//       totalAmount: parseFloat(finalTotalAmount),
+//       amountPaid: parseFloat(amountPaid),
+//       balanceDue: parseFloat(balanceDue),
+//       paymentMethod,
+//       status,
+//       billType,
+//       transactionId: `TRANS-${Math.floor(Math.random() * 1000000)}`,
+//       issuedByUserId: '84525', // Replace with actual user id
+//       billDocumentUrl,
+//       notes,
+//     };
+
+//     try {
+//       const createdBill = await fetchData('http://localhost:2009/api/bills', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(newBill),
+//       });
+//       setSelectedBillId(createdBill.id);
+//       setShowSuccessModal(true);
+//     } catch (e) {
+//       setFormError(`Failed to create bill: ${e.message}`);
+//     } finally {
+//       setFormLoading(false);
+//     }
+//   };
+
+//   // PDF content generator
+//   const createPDFContent = () => {
+//     if (!appointmentDetails) return '';
+
+//     const baseFee = parseFloat(consultationFee || 0) + parseFloat(additionalCharges || 0);
+//     const gst = baseFee * 0.18;
+//     const calculatedTotalAmount = baseFee + gst;
+
+//     return `
+//       <div style="font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; padding: 30px; color: #333; border: 1px solid #e0e0e0; max-width: 800px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-radius: 12px; background-color: #ffffff;">
+//         <div style="text-align: center; border-bottom: 4px solid #ff7043; padding-bottom: 20px; margin-bottom: 30px;">
+//           <h1 style="color: #ff7043; margin: 0; font-size: 32px; font-weight: 700;">Sarvotham Spine Care Hospital</h1>
+//           <p style="margin: 10px 0 0; font-size: 15px; color: #555;">123 Health St, Wellness City, 560001</p>
+//           <p style="margin: 5px 0 0; font-size: 15px; color: #555;">Phone: (080) 1234 5678 | Email: contact@sarvothamhospital.com</p>
+//         </div>
+//         <h2 style="text-align: center; color: #6d4c41; margin-bottom: 30px; font-size: 24px; font-weight: 600; text-transform: uppercase;">Invoice / Medical Bill</h2>
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 25px; background-color: #fdebd0; padding: 20px; border-radius: 8px; border: 1px solid #f9d5b6;">
+//           <div>
+//             <strong>Bill Date:</strong> <span style="font-weight: normal;">${billDate || 'N/A'}</span><br/>
+//             <strong>Bill Type:</strong> <span style="font-weight: normal;">Consultation</span>
+//           </div>
+//           <div style="text-align: right;">
+//             <strong>Patient:</strong> <span style="font-weight: normal;">${appointmentDetails.patientFullName}</span><br/>
+//             <strong>Doctor:</strong> <span style="font-weight: normal;">${appointmentDetails.doctorFullName}</span>
+//           </div>
+//         </div>
+//         <table style="width: 100%; border-collapse: collapse; margin-top: 25px; border: 1px solid #d7ccc8; border-radius: 8px; overflow: hidden;">
+//           <thead>
+//             <tr style="background-color: #ff7043; color: #ffffff;">
+//               <th style="padding: 15px; border: 1px solid #ff7043; text-align: left; font-weight: 600;">Description</th>
+//               <th style="padding: 15px; border: 1px solid #ff7043; text-align: right; font-weight: 600;">Amount (₹)</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             <tr style="background-color: #fff3e0;">
+//               <td style="padding: 15px; border: 1px solid #d7ccc8;">Consultation Fee</td>
+//               <td style="padding: 15px; border: 1px solid #d7ccc8; text-align: right;">${parseFloat(consultationFee).toFixed(2)}</td>
+//             </tr>
+//             <tr style="background-color: #fff3e0;">
+//               <td style="padding: 15px; border: 1px solid #d7ccc8;">Additional Charges</td>
+//               <td style="padding: 15px; border: 1px solid #d7ccc8; text-align: right;">${parseFloat(additionalCharges).toFixed(2)}</td>
+//             </tr>
+//             <tr style="background-color: #fff3e0;">
+//               <td style="padding: 15px; border: 1px solid #d7ccc8;">GST (18%)</td>
+//               <td style="padding: 15px; border: 1px solid #d7ccc8; text-align: right;">${gst.toFixed(2)}</td>
+//             </tr>
+//             <tr style="background-color: #fdebd0; font-weight: bold;">
+//               <td style="padding: 15px; border: 1px solid #f9d5b6; text-align: right; font-size: 16px;">Total Amount</td>
+//               <td style="padding: 15px; border: 1px solid #f9d5b6; text-align: right; font-size: 16px; color: #ff7043;">₹${calculatedTotalAmount.toFixed(2)}</td>
+//             </tr>
+//           </tbody>
+//         </table>
+//         <div style="margin-top: 30px; text-align: right;">
+//           <p style="font-size: 16px; font-weight: bold; margin: 5px 0; color: #ff7043;">Amount Paid: ₹${parseFloat(amountPaid).toFixed(2)}</p>
+//           <p style="font-size: 16px; font-weight: bold; margin: 5px 0; color: ${parseFloat(balanceDue) > 0 ? '#d84315' : '#2e7d32'};">Balance Due: ₹${parseFloat(balanceDue).toFixed(2)}</p>
+//           <p style="margin: 10px 0;">Payment Method: <span style="font-weight: normal;">${paymentMethod}</span></p>
+//         </div>
+//         <div style="margin-top: 40px; border-top: 1px dashed #d7ccc8; padding-top: 25px;">
+//           <p style="font-size: 15px;"><strong>Notes:</strong> <span style="font-weight: normal;">${notes || 'N/A'}</span></p>
+//         </div>
+//         <div style="margin-top: 50px; text-align: center; color: #888; font-style: italic; font-size: 14px;">
+//           Thank you for choosing Sarvotham Spine Care Hospital. We wish you a speedy recovery.
+//         </div>
+//       </div>
+//     `;
+//   };
+
+//   // PDF generation and preview handlers
+//   const handleGeneratePDFPreview = async () => {
+//     if (!appointmentDetails) {
+//       alert('No appointment details available to generate a PDF preview.');
+//       return;
+//     }
+//     setPdfContent('');
+//     setPdfBlob(null);
+//     setFormLoading(true);
+//     const contentHtml = createPDFContent();
+//     setPdfContent(contentHtml);
+
+//     const billContent = document.createElement('div');
+//     billContent.style.width = '210mm'; // A4 width
+//     billContent.style.backgroundColor = '#fff';
+//     billContent.style.position = 'absolute';
+//     billContent.style.left = '-9999px';
+//     billContent.innerHTML = contentHtml;
+//     document.body.appendChild(billContent);
+
+//     try {
+//       const canvas = await html2canvas(billContent, { scale: 2, logging: false });
+//       const imgData = canvas.toDataURL('image/jpeg', 1.0);
+//       const pdf = new jsPDF('p', 'mm', 'a4');
+//       const imgProps = pdf.getImageProperties(imgData);
+//       const pdfWidth = pdf.internal.pageSize.getWidth();
+//       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+//       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+//       const pdfOutput = pdf.output('blob');
+//       setPdfBlob(pdfOutput);
+
+//       setShowPreviewModal(true);
+//     } catch (error) {
+//       alert('Failed to generate PDF. Please try again.');
+//     } finally {
+//       document.body.removeChild(billContent);
+//       setFormLoading(false);
+//     }
+//   };
+
+//   const handleDownloadPDF = () => {
+//     if (!pdfBlob) {
+//       alert('PDF not available for download.');
+//       return;
+//     }
+//     const url = URL.createObjectURL(pdfBlob);
+//     const link = document.createElement('a');
+//     link.href = url;
+//     link.download = `bill_appointment_${selectedAppointmentId}.pdf`;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//     URL.revokeObjectURL(url);
+//   };
+
+//   // File upload handler
+//   const handleUploadBill = async (event) => {
+//     const file = event.target.files[0];
+//     if (!file) return;
+
+//     const MAX_FILE_SIZE_MB = 20;
+//     const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+//     if (file.size > MAX_FILE_SIZE_BYTES) {
+//       alert(`File too large (max ${MAX_FILE_SIZE_MB}MB). Please select a smaller file.`);
+//       event.target.value = null;
+//       return;
+//     }
+
+//     if (file.type !== 'application/pdf') {
+//       alert('Invalid file type. Please upload a PDF file only.');
+//       event.target.value = null;
+//       return;
+//     }
+
+//     setUploading(true);
+//     setFormError(null);
+
+//     try {
+//       const formData = new FormData();
+//       formData.append('billDocument', file);
+
+//       const response = await fetch('http://localhost:2009/api/bills/upload-document', {
+//         method: 'POST',
+//         body: formData,
+//       });
+
+//       if (!response.ok) {
+//         const errorText = await response.text();
+//         throw new Error(errorText || 'Failed to upload file');
+//       }
+
+//       const uploadResult = await response.json();
+//       setBillDocumentUrl(uploadResult.fileUrl);
+//       alert(`Uploaded file: ${file.name}. Please click 'Create Bill' to finalize.`);
+//     } catch (e) {
+//       setFormError(`File upload failed: ${e.message}`);
+//     } finally {
+//       setUploading(false);
+//       event.target.value = null;
+//     }
+//   };
+
+//   // Modal close handlers
+//   const handleCloseModal = () => {
+//     setShowSuccessModal(false);
+//     handleBackToList();
+//   };
+//   const handleClosePreviewModal = () => {
+//     setShowPreviewModal(false);
+//     setPdfContent('');
+//     setPdfBlob(null);
+//   };
+
+//   // Render appointment list with search bar and 3 cards per row
+//   const renderAppointmentList = () => (
+//     <Box
+//       sx={{
+//         width: '100%',
+//         maxWidth: 1800,
+//         bgcolor: '#fff8f3',
+//         borderRadius: 4,
+//         boxShadow: '0 16px 40px rgba(237, 170, 152, 0.15)',
+//         p: { xs: 4, sm: 6 },
+//         mx: 'auto',
+//       }}
+//     >
+//       <Typography
+//         variant="h5"
+//         component="h2"
+//         gutterBottom
+//         sx={{
+//           color: 'black', // burnt orange
+//           mb: 5,
+//           fontWeight: '800',
+//           borderBottom: '4px solid  black',
+//           pb: 2,
+//           letterSpacing: '0.08em',
+//           fontSize: { xs: '2rem', sm: '2.25rem' },
+//           textTransform: 'uppercase',
+//           fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+//           textShadow: '0 2px 6px rgba(0,0,0,0.1)',
+//         }}
+//       >
+//         Recent Appointments
+//       </Typography>
+
+//       {/* Search Bar */}
+//      <Box sx={{ mb: 4, maxWidth: 1000, mx: 'auto' }}>
+//   <TextField
+//     label="Search appointments"
+//     variant="outlined"
+//     fullWidth
+//     size="medium"
+//     value={searchQuery}
+//     onChange={(e) => setSearchQuery(e.target.value)}
+//     placeholder="Search by Appointment ID, Reason, Doctor ID, Patient ID"
+//     InputProps={{
+//       startAdornment: (
+//         <InputAdornment position="start">
+//           <SearchIcon sx={{ color: 'black' }} />
+//         </InputAdornment>
+//       ),
+//       sx: {
+//         borderRadius: 5,
+//         '& fieldset': {
+//           borderColor: '#ffccbc',
+//         },
+//         '&:hover fieldset': {
+//           borderColor: 'black',
+//         },
+//         '&.Mui-focused fieldset': {
+//           borderColor: 'black',
+//           boxShadow: '0 0 8px rgba(230, 74, 25, 0.4)',
+//         },
+//         backgroundColor: '#fff5f0',
+//       },
+//     }}
+//     InputLabelProps={{
+//       sx: {
+//         color: 'black',
+//         fontWeight: 600,
+//       },
+//     }}
+//   />
+// </Box>
+
+//       <Grid container spacing={4} justifyContent="center">
+//         {appointments
+//           .filter((appointment) => {
+//             const query = searchQuery.trim().toLowerCase();
+//             if (!query) return true;
+
+//             return (
+//               appointment.id?.toString().toLowerCase().includes(query) ||
+//               appointment.reasonForVisit?.toLowerCase().includes(query) ||
+//               appointment.doctorId?.toString().toLowerCase().includes(query) ||
+//               appointment.patientId?.toString().toLowerCase().includes(query)
+//             );
+//           })
+//           .map((appointment) => (
+//             <Grid item xs={12} sm={6} md={4} key={appointment.id} sx={{ display: 'flex', justifyContent: 'center' }}>
+//               <StyledPaper
+//                 sx={{
+//                   width: 350,
+//                   height: 280,
+//                 }}
+//                 onClick={() => handleGenerateBillClick(appointment)}
+//                 elevation={8}
+//                 aria-label={`Generate bill for ${appointment.patientFullName}`}
+//                 role="button"
+//                 tabIndex={0}
+//                 onKeyPress={(e) => {
+//                   if (e.key === 'Enter' || e.key === ' ') handleGenerateBillClick(appointment);
+//                 }}
+//               >
+//                 <ListItem disableGutters sx={{ px: 3, py: 4 }}>
+//                   <ListItemText
+//                     sx={{ minWidth: 0 }}
+//                     primary={
+//                       <Typography
+//                         variant="h6"
+//                         sx={{
+//                           fontWeight: '900',
+//                           color: 'orange',
+//                           fontSize: { xs: '1.25rem', sm: '1.5rem' },
+//                           whiteSpace: 'nowrap',
+//                           overflow: 'hidden',
+//                           textOverflow: 'ellipsis',
+//                           textShadow: '0 1px 2px rgba(0,0,0,0.12)',
+//                         }}
+//                       >
+//                         {appointment.patientFullName}
+//                       </Typography>
+//                     }
+//                     secondary={
+//                       <>
+//                         <Typography
+//                           component="span"
+//                           color="black"
+//                           sx={{ display: 'block', mt: 1, fontSize: '1rem', fontWeight: 700 }}
+//                         >
+//                           Doctor: {appointment.doctorFullName} ({appointment.doctorSpecialization})
+//                         </Typography>
+//                         <Typography
+//                           component="span"
+//                           color="black"
+//                           sx={{ display: 'block', mt: 0.7, fontSize: '0.95rem', fontWeight: 600 }}
+//                         >
+//                           Date: {appointment.formattedDate} &nbsp; | &nbsp; Time: {appointment.formattedTime}
+//                         </Typography>
+//                         <Typography
+//                           component="span"
+//                           color="black"
+//                           sx={{ display: 'block', mt: 1, fontSize: '0.9rem', fontStyle: 'italic', fontWeight: 600 }}
+//                         >
+//                           Reason: {appointment.reasonForVisit || 'N/A'}
+//                         </Typography>
+//                       </>
+//                     }
+//                   />
+//                 </ListItem>
+//               </StyledPaper>
+//             </Grid>
+//           ))}
+//       </Grid>
+//     </Box>
+//   );
+
+//   // Billing Form rendering (with your earlier provided code styling and contents)
+//   const renderBillingForm = () => {
+//     if (formLoading) {
+//       return (
+//         <Box sx={{ display: 'flex',maxWidth : 2000, justifyContent: 'center', alignItems: 'center', p: 4, bgcolor: '#fbe9e7', minHeight: '100vh' }}>
+//           <CircularProgress sx={{ color: 'black' }} />
+//           <Typography variant="h6" sx={{ ml: 2, color: 'black' }}>
+         
+//           </Typography>
+//         </Box>
+//       );
+//     }
+//     if (formError) {
+//       return (
+//         <Box sx={{ p: 4, bgcolor: '#fbe9e7', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+//           <Alert severity="error" sx={{ width: '1800px', maxWidth: '1800px', mb: 3, borderRadius: 2, bgcolor: '#ffccbc', color: 'black' }}>
+//             {formError}
+//           </Alert>
+//           <StyledButton variant="outlined" onClick={handleBackToList} sx={{ mt: 2, borderColor: 'black', color: 'black' }}>
+//             <ArrowBackIcon sx={{ mr: 1 }} /> Back to Appointments
+//           </StyledButton>
+//         </Box>
+//       );
+//     }
+//     if (!appointmentDetails) {
+//       return (
+//         <Box sx={{ p: 4, bgcolor: '#e6e1daff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+//           <Typography variant="body1" color="text.secondary" sx={{ mb: 3, color: '#bf360c' }}>
+//             No appointment data found for billing.
+//           </Typography>
+//           <StyledButton variant="outlined" onClick={handleBackToList} sx={{ mt: 2, borderColor: '#bf360c', color: '#bf360c' }}>
+//             <ArrowBackIcon sx={{ mr: 1 }} /> Back to Appointments
+//           </StyledButton>
+//         </Box>
+//       );
+//     }
+//     return (
+//       <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1100px', mx: 'auto', bgcolor: '#fff3e0', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+//         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+//           <Button onClick={handleBackToList} variant="text" sx={{ color: '#bf360c', textTransform: 'none', fontWeight: 'bold' }}>
+//             <ArrowBackIcon sx={{ mr: 1 }} /> Back
+//           </Button>
+//           <Typography variant="h4" gutterBottom sx={{ flexGrow: 1, textAlign: 'center', color: '#bf360c', fontWeight: 'bold', fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+//             Generate Bill
+//           </Typography>
+//         </Box>
+
+//         <Card sx={{ mb: 3, boxShadow: 6, borderRadius: 3, border: '1px solid #d7ccc8', bgcolor: '#fff5f0' }}>
+//           <CardContent>
+//             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#bf360c', borderBottom: '2px solid #ffccb3', pb: 1, mb: 2 }}>
+//               Appointment Details
+//             </Typography>
+//             <Grid container spacing={2} sx={{ color: '#6d4c41' }}>
+//               <Grid item xs={12} sm={6}>
+//                 <Typography variant="body1"><strong>Patient:</strong> {appointmentDetails.patientFullName}</Typography>
+//               </Grid>
+//               <Grid item xs={12} sm={6}>
+//                 <Typography variant="body1"><strong>Doctor:</strong> {appointmentDetails.doctorFullName} ({appointmentDetails.doctorSpecialization})</Typography>
+//               </Grid>
+//               <Grid item xs={12} sm={6}>
+//                 <Typography variant="body1"><strong>Date:</strong> {appointmentDetails.formattedDate}</Typography>
+//               </Grid>
+//               <Grid item xs={12} sm={6}>
+//                 <Typography variant="body1"><strong>Time:</strong> {appointmentDetails.formattedTime}</Typography>
+//               </Grid>
+//               <Grid item xs={12}>
+//                 <Typography variant="body1"><strong>Reason:</strong> {appointmentDetails.reasonForVisit || 'N/A'}</Typography>
+//               </Grid>
+//             </Grid>
+//           </CardContent>
+//         </Card>
+
+//         <Card sx={{ boxShadow: 6, width: '100%', maxWidth: 16000, borderRadius: 3, flexGrow: 1, border: '1px solid #d7ccc8', bgcolor: '#fff5f0' }}>
+//           <CardContent>
+//             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: '#bf360c', borderBottom: '2px solid #ffccb3', pb: 1, mb: 2 }}>
+//               Bill Information
+//             </Typography>
+//             <Grid container spacing={3}>
+//               {/* Bill Date */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Bill Date"
+//                   fullWidth
+//                   value={billDate}
+//                   InputProps={{ readOnly: true }}
+//                   InputLabelProps={{ shrink: true }}
+//                   variant="outlined"
+//                   size="small"
+//                 />
+//               </Grid>
+
+//               {/* Bill Type */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Bill Type"
+//                   fullWidth
+//                   value={billType}
+//                   InputProps={{ readOnly: true }}
+//                   variant="outlined"
+//                   size="small"
+//                 />
+//               </Grid>
+
+//               {/* Payment Method */}
+//               <Grid item xs={12} sm={6}>
+//                 <FormControl fullWidth variant="outlined" size="small">
+//                   <InputLabel id="payment-method-label">Payment Method</InputLabel>
+//                   <Select
+//                     labelId="payment-method-label"
+//                     value={paymentMethod}
+//                     label="Payment Method"
+//                     onChange={(e) => setPaymentMethod(e.target.value)}
+//                   >
+//                     <MenuItem value="Credit Card">Credit Card</MenuItem>
+//                     <MenuItem value="Debit Card">Debit Card</MenuItem>
+//                     <MenuItem value="Cash">Cash</MenuItem>
+//                     <MenuItem value="Online Transfer">Online Transfer</MenuItem>
+//                   </Select>
+//                 </FormControl>
+//               </Grid>
+
+//               {/* Consultation Fee */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Consultation Fee (₹)"
+//                   fullWidth
+//                   type="number"
+//                   value={consultationFee}
+//                   onChange={(e) => setConsultationFee(e.target.value)}
+//                   variant="outlined"
+//                   size="small"
+//                   inputProps={{ min: "0" }}
+//                 />
+//               </Grid>
+
+//               {/* Additional Charges */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Additional Charges (₹)"
+//                   fullWidth
+//                   type="number"
+//                   value={additionalCharges}
+//                   onChange={(e) => setAdditionalCharges(e.target.value)}
+//                   variant="outlined"
+//                   size="small"
+//                   inputProps={{ min: "0" }}
+//                 />
+//               </Grid>
+
+//               {/* Total Amount */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Total Amount (₹)"
+//                   fullWidth
+//                   type="number"
+//                   value={totalAmount}
+//                   InputProps={{ readOnly: true }}
+//                   variant="outlined"
+//                   size="small"
+//                   sx={{ '& .MuiOutlinedInput-root': { backgroundColor: '#ffe6dc' } }}
+//                 />
+//               </Grid>
+
+//               {/* Amount Paid */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Amount Paid (₹)"
+//                   fullWidth
+//                   type="number"
+//                   value={amountPaid}
+//                   onChange={(e) => setAmountPaid(e.target.value)}
+//                   variant="outlined"
+//                   size="small"
+//                   inputProps={{ min: "0" }}
+//                 />
+//               </Grid>
+
+//               {/* Balance Due */}
+//               <Grid item xs={12} sm={6}>
+//                 <TextField
+//                   label="Balance Due (₹)"
+//                   fullWidth
+//                   type="number"
+//                   value={balanceDue}
+//                   InputProps={{ readOnly: true }}
+//                   variant="outlined"
+//                   size="small"
+//                   sx={{
+//                     '& .MuiOutlinedInput-root': {
+//                       backgroundColor: parseFloat(balanceDue) > 0 ? '#ffebee' : '#e9f5ef',
+//                     },
+//                     '& .MuiInputBase-input': {
+//                       color: parseFloat(balanceDue) > 0 ? '#d84315' : '#2e7d32',
+//                       fontWeight: 'bold',
+//                     }
+//                   }}
+//                 />
+//               </Grid>
+
+//               {/* Notes */}
+//               <Grid item xs={12}>
+//                 <TextField
+//                   label="Notes"
+//                   fullWidth
+//                   multiline
+//                   rows={3}
+//                   value={notes}
+//                   onChange={(e) => setNotes(e.target.value)}
+//                   variant="outlined"
+//                   size="small"
+//                   placeholder="Add any relevant notes for the bill..."
+//                 />
+//               </Grid>
+//             </Grid>
+
+//             {/* PDF generate and upload */}
+//             <Box sx={{ mt: 3, mb: 2, display: 'flex', justifyContent: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
+//               <StyledButton
+//                 variant="contained"
+//                 onClick={handleGeneratePDFPreview}
+//                 disabled={!appointmentDetails || formLoading}
+//               >
+//                 {formLoading ? 'Generating PDF...' : 'Generate PDF'}
+//               </StyledButton>
+//             </Box>
+
+//             <Box sx={{ mt: 2 }}>
+//               <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', color: '#6d4c41' }}>
+//                 Upload Bill Document (PDF)
+//               </Typography>
+//               <TextField
+//                 label="Choose File"
+//                 fullWidth
+//                 variant="outlined"
+//                 size="small"
+//                 InputProps={{
+//                   readOnly: true,
+//                   endAdornment: (
+//                     <StyledButton
+//                       variant="contained"
+//                       component="label"
+//                       sx={{ minWidth: 'auto', px: 2, py: 1 }}
+//                       disabled={uploading}
+//                     >
+//                       {uploading ? <CircularProgress size={20} color="inherit" /> : 'Browse'}
+//                       <input
+//                         type="file"
+//                         hidden
+//                         id="bill-document-upload"
+//                         onChange={handleUploadBill}
+//                         accept="application/pdf"
+//                       />
+//                     </StyledButton>
+//                   ),
+//                 }}
+//                 value={billDocumentUrl ? billDocumentUrl.split('/').pop() : ''}
+//               />
+//               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+//                 {uploading ? 'Uploading...' : (billDocumentUrl ? `Uploaded: ${billDocumentUrl.split('/').pop()}` : 'Please upload the generated PDF document (Max 5MB)')}
+//               </Typography>
+//             </Box>
+
+//             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+//               <StyledButton
+//                 variant="contained"
+//                 onClick={handleCreateBill}
+//                 disabled={formLoading || !!selectedBillId || !billDocumentUrl || uploading}
+//               >
+//                 {formLoading ? 'Creating Bill...' : 'Create Bill'}
+//               </StyledButton>
+//             </Box>
+//           </CardContent>
+//         </Card>
+
+//         {/* Success Modal */}
+//         <Modal
+//           open={showSuccessModal}
+//           onClose={handleCloseModal}
+//           aria-labelledby="success-modal-label"
+//           aria-describedby="success-modal-description"
+//         >
+//           <Box
+//             sx={{
+//               position: 'absolute',
+//               top: '50%',
+//               left: '50%',
+//               transform: 'translate(-50%, -50%)',
+//               width: { xs: '90%', sm: 400 },
+//               bgcolor: '#fff3e0',
+//               boxShadow: 24,
+//               borderRadius: 3,
+//               p: 4,
+//               outline: 'none',
+//               textAlign: 'center',
+//               border: '1px solid #d7ccc8',
+//             }}
+//           >
+//             <Typography id="success-modal-label" variant="h6" component="h2" gutterBottom sx={{ color: '#2e7d32', fontWeight: 'bold' }}>
+//               ✅ Success!
+//             </Typography>
+//             <Typography id="success-modal-description" sx={{ mb: 3, color: 'text.secondary' }}>
+//               Bill for appointment created successfully with ID: <strong style={{ color: '#ff7043' }}>{selectedBillId}</strong>.
+//             </Typography>
+//             <Box>
+//               <StyledButton variant="contained" onClick={handleCloseModal} sx={{ backgroundColor: '#2e7d32', '&:hover': { backgroundColor: '#27632a' } }}>
+//                 OK
+//               </StyledButton>
+//             </Box>
+//           </Box>
+//         </Modal>
+
+//         {/* PDF Preview Modal */}
+//         <Modal
+//           open={showPreviewModal}
+//           onClose={handleClosePreviewModal}
+//           aria-labelledby="pdf-preview-modal-title"
+//           aria-describedby="pdf-preview-modal-description"
+//         >
+//           <Box
+//             sx={{
+//               position: 'absolute',
+//               top: '50%',
+//               left: '50%',
+//               transform: 'translate(-50%, -50%)',
+//               width: { xs: '95%', sm: '80%', md: '70%', lg: '60%' },
+//               height: '90vh',
+//               bgcolor: '#fff3e0',
+//               boxShadow: 24,
+//               p: { xs: 2, sm: 4 },
+//               outline: 'none',
+//               display: 'flex',
+//               flexDirection: 'column',
+//               borderRadius: 3,
+//               border: '1px solid #d7ccc8',
+//             }}
+//           >
+//             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+//               <Typography id="pdf-preview-modal-title" variant="h6" sx={{ fontWeight: 'bold', color: '#bf360c' }}>
+//                 PDF Preview 📄
+//               </Typography>
+//               <IconButton onClick={handleClosePreviewModal} aria-label="close" sx={{ color: '#bf360c' }}>
+//                 <CloseIcon />
+//               </IconButton>
+//             </Box>
+//             <Divider sx={{ mb: 2 }} />
+//             <Box id="pdf-preview-content" sx={{ flexGrow: 1, overflowY: 'auto', p: 1 }} dangerouslySetInnerHTML={{ __html: pdfContent }} />
+//             <Divider sx={{ mt: 2 }} />
+//             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+//               <StyledButton variant="contained" onClick={handleDownloadPDF} disabled={!pdfBlob} sx={{ backgroundColor: '#bf360c', '&:hover': { backgroundColor: '#9a2e0b' } }}>
+//                 Download PDF
+//               </StyledButton>
+//             </Box>
+//           </Box>
+//         </Modal>
+//       </Box>
+//     );
+//   };
+
+//   // Return either appointment list or billing form
+//   return selectedAppointmentId === null ? renderAppointmentList() : renderBillingForm();
+// }

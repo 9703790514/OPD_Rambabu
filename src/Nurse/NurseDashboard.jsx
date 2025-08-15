@@ -1300,13 +1300,13 @@ function HospitalInfo() {
   ];
 
   return (
-    <Box sx={{ py: 4, px: { xs: 2, md: 6 }, maxWidth: 900, mx: 'auto', bgcolor: '#fff', borderRadius: 2, boxShadow: 3 }}>
+    <Box sx={{ py: 4, px: { xs: 2, md: 6 }, maxWidth: 10000, mx: 'auto', bgcolor: '#fff', borderRadius: 2, boxShadow: 3 }}>
       <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main', textAlign: 'center' }}>
         Welcome to Sarvotham's Spine Care
       </Typography>
       <Grid container spacing={4} alignItems="center" sx={{ mb: 4 }}>
         <Grid item xs={12} md={6}>
-          <img src="https://i0.wp.com/www.treatathomes.com/wp-content/uploads/2022/01/reasons-to-choose-home-nurse-1.png?fit=640%2C372&ssl=1" alt="Hospital Front View" style={{ width: '100%', borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12)' }} loading="lazy" />
+          <img src="https://i0.wp.com/www.treatathomes.com/wp-content/uploads/2022/01/reasons-to-choose-home-nurse-1.png?fit=640%2C372&ssl=1" alt="Hospital Front View" style={{ width: '1000px', borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12)' }} loading="lazy" />
         </Grid>
         <Grid item xs={12} md={6}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 'medium' }}>

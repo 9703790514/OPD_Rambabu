@@ -410,19 +410,23 @@ const MyHealthPage = ({ patient, onViewMedicalRecords }) => {
     }
   };
 
-  const formatTime = (timeString) => {
-    if (!timeString) return 'N/A';
-    try {
-      // Create a dummy date to parse the time string correctly
-      return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
-    } catch (e) {
-      return timeString;
-    }
-  };
+const formatTime = (instantString) => {
+  if (!instantString) return 'N/A';
+  try {
+    // Parse the Instant directly — JS Date can handle ISO 8601 strings
+    const date = new Date(instantString);
+    // Format to 12-hour or 24-hour as needed
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // change to false if you prefer 24-hour clock
+    });
+  } catch (e) {
+    console.error('Error formatting time:', e);
+    return instantString;
+  }
+};
+
 
   return (
     <ThemeProvider theme={theme}>

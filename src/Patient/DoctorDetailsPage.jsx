@@ -1477,7 +1477,7 @@ export const DoctorDetailsPage = ({ doctor, onBack, patient }) => {
       sx={{
         py: 5,
         px: { xs: 3, sm: 5, md: 6 },
-        maxWidth: 900,
+        maxWidth: 1300,
         mx: 'auto',
         bgcolor: 'background.paper',
         borderRadius: 4,

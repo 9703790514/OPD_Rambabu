@@ -1616,6 +1616,7 @@
 // };
 
 // export default FrontDeskBookAppointmentPage;
+
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -1626,10 +1627,6 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EventNoteIcon from '@mui/icons-material/EventNote';
@@ -1643,12 +1640,11 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import dayjs from 'dayjs';
 
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-
 const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUser }) => {
-  // State variables for form inputs and UI feedback
+  // Form states
   const [doctorName, setDoctorName] = useState('');
   const [patientIdInput, setPatientIdInput] = useState(patientId || '');
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -1656,136 +1652,112 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
   const [reasonForVisit, setReasonForVisit] = useState('');
   const [roomNumber, setRoomNumber] = useState('');
 
-  // State for handling loading, submission, and errors
+  // UI states
   const [loading, setLoading] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [submissionMessage, setSubmissionMessage] = useState('');
 
-  // State for doctor availability data
   const [doctorAvailability, setDoctorAvailability] = useState(null);
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   const [availabilityError, setAvailabilityError] = useState(null);
 
-  // State for available time slots and existing appointments for a selected date
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [existingAppointments, setExistingAppointments] = useState([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [appointmentsError, setAppointmentsError] = useState(null);
 
-  // State for the patient autocomplete functionality
   const [allPatients, setAllPatients] = useState([]);
   const [loadingPatients, setLoadingPatients] = useState(true);
   const [patientsError, setPatientsError] = useState(null);
   const [selectedPatientObject, setSelectedPatientObject] = useState(null);
 
-  // Helper function to get the weekday name from a dayjs object
+  // Helper: Get day name from dayjs object
   const getWeekdayNameFromDayjs = (dateObj) => {
     if (!dateObj) return '';
     const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
     return days[dateObj.day()];
   };
 
-  // Helper function to format an ISO string to a HH:MM time string
+  // Format ISO date-time string to HH:mm
   const formatInstantToTime = (isoString) => {
     if (!isoString) return '';
     const date = new Date(isoString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   };
 
-  // Function to disable dates in the DatePicker that are not available
+  // Disable unavailable dates in DatePicker
   const shouldDisableDate = (date) => {
     if (!doctorAvailability) return true;
     const today = dayjs().startOf('day');
-    // Disable past dates
     if (date.isBefore(today, 'day')) return true;
-    // Disable dates where the doctor is on leave
     const isLeaveDay = doctorAvailability.leaveDates.some(ld => dayjs(ld).isSame(date, 'day'));
     if (isLeaveDay) return true;
-    // Disable days of the week that are not in the doctor's schedule
     const dayOfWeek = getWeekdayNameFromDayjs(date);
     return !doctorAvailability.dailySlots.some(ds => ds.day === dayOfWeek && ds.slots && ds.slots.length > 0);
   };
 
-  // Effect to fetch doctor details when the component mounts or doctorId changes
+  // Fetch doctor details
   useEffect(() => {
-    const fetchDoctorDetails = async () => {
-      if (!doctorId) return;
-      try {
-        const response = await fetch(`http://localhost:2005/api/doctors/${doctorId}`);
-        if (!response.ok) throw new Error('Failed to fetch doctor details.');
-        const data = await response.json();
-        setDoctorName(`Dr. ${data.firstName} ${data.lastName}`);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchDoctorDetails();
+    if (!doctorId) return;
+    fetch(`http://localhost:2005/api/doctors/${doctorId}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch doctor details.');
+        return res.json();
+      })
+      .then(data => setDoctorName(`Dr. ${data.firstName} ${data.lastName}`))
+      .catch(console.error);
   }, [doctorId]);
 
-  // Effect to fetch doctor's availability schedule
+  // Fetch doctor availability
   useEffect(() => {
-    const fetchDoctorAvailability = async () => {
-      if (!doctorId) {
-        setAvailabilityError("Doctor ID is not available for fetching availability.");
-        setLoadingAvailability(false);
-        return;
-      }
-      setLoadingAvailability(true);
-      setAvailabilityError(null);
-      try {
-        const response = await fetch(`http://localhost:2005/api/doctor-availabilities/byDoctorId/${doctorId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setDoctorAvailability(data);
-        } else if (response.status === 404) {
-          setDoctorAvailability(null);
-        } else {
-          const errText = await response.text();
-          throw new Error(`Failed to fetch doctor availability: ${response.status} - ${errText}`);
-        }
-      } catch (err) {
-        setAvailabilityError(err.message || "Failed to load doctor availability.");
-      } finally {
-        setLoadingAvailability(false);
-      }
-    };
-    fetchDoctorAvailability();
+    if (!doctorId) {
+      setAvailabilityError('Doctor ID is missing.');
+      setLoadingAvailability(false);
+      return;
+    }
+    setLoadingAvailability(true);
+    setAvailabilityError(null);
+    fetch(`http://localhost:2005/api/doctor-availabilities/byDoctorId/${doctorId}`)
+      .then(res => {
+        if (res.ok) return res.json();
+        if (res.status === 404) return null;
+        return res.text().then(text => { throw new Error(text); });
+      })
+      .then(data => setDoctorAvailability(data))
+      .catch(err => setAvailabilityError(err.message || 'Failed to load availability.'))
+      .finally(() => setLoadingAvailability(false));
   }, [doctorId]);
 
-  // Effect to fetch all patients for the autocomplete dropdown
+  // Fetch patients list
   useEffect(() => {
-    const fetchPatients = async () => {
-      setLoadingPatients(true);
-      setPatientsError(null);
-      try {
-        const response = await fetch('http://localhost:2008/api/patients');
-        if (!response.ok) throw new Error(`Failed to fetch patients: ${response.status}`);
-        const data = await response.json();
+    setLoadingPatients(true);
+    setPatientsError(null);
+    fetch('http://localhost:2008/api/patients')
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to fetch patients: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
         setAllPatients(data);
         if (patientId) {
-          const preSelected = data.find(p => p._id === patientId);
-          if (preSelected) {
-            setSelectedPatientObject(preSelected);
-            setPatientIdInput(preSelected._id);
+          const preSelect = data.find(p => p._id === patientId);
+          if (preSelect) {
+            setSelectedPatientObject(preSelect);
+            setPatientIdInput(preSelect._id);
           }
         }
-      } catch (err) {
-        setPatientsError(err.message || "Failed to load patient list.");
-      } finally {
-        setLoadingPatients(false);
-      }
-    };
-    fetchPatients();
+      })
+      .catch(err => setPatientsError(err.message || 'Failed to load patients.'))
+      .finally(() => setLoadingPatients(false));
   }, [patientId]);
 
-  // Syncs the patient ID input state with the selected patient object
+  // Sync patient ID and object
   useEffect(() => {
     setPatientIdInput(selectedPatientObject ? selectedPatientObject._id : '');
   }, [selectedPatientObject]);
 
-  // Effect to fetch and calculate available time slots for the selected date
+  // Fetch appointments and available slots for selected date
   useEffect(() => {
-    // Reset slots and time selection when the date changes
     setAvailableTimeSlots([]);
     setAppointmentTime('');
     if (!appointmentDate || !doctorId || !doctorAvailability) return;
@@ -1796,14 +1768,12 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
     const selectedDay = getWeekdayNameFromDayjs(dayjs(appointmentDate));
     const selectedDateTime = dayjs(appointmentDate);
 
-    // Check for past dates
     if (selectedDateTime.isBefore(dayjs().startOf('day'), 'day')) {
-      setAppointmentsError("Cannot book appointments in the past.");
+      setAppointmentsError('Cannot book appointments in the past.');
       setLoadingAppointments(false);
       return;
     }
 
-    // Check if the selected date is a leave day
     const isLeaveDay = doctorAvailability.leaveDates.some(ld => dayjs(ld).isSame(selectedDateTime, 'day'));
     if (isLeaveDay) {
       setAppointmentsError(`Dr. ${doctorName.split(' ')[1]} is on leave on ${selectedDateTime.format('MM/DD/YYYY')}.`);
@@ -1811,10 +1781,9 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
       return;
     }
 
-    // Get the base slots and break slots for the selected day
     const dailySlotInfo = doctorAvailability.dailySlots.find(ds => ds.day === selectedDay);
     if (!dailySlotInfo || !dailySlotInfo.slots || dailySlotInfo.slots.length === 0) {
-      setAppointmentsError("No slots available for this doctor on the selected day.");
+      setAppointmentsError('No slots available for this doctor on selected day.');
       setLoadingAppointments(false);
       return;
     }
@@ -1827,8 +1796,7 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
       `${formatInstantToTime(slot.startTime)}-${formatInstantToTime(slot.endTime)}`
     ).filter(Boolean);
 
-    // Filter out break slots from the base slots
-    const currentAvailableSlots = formattedBaseSlots.filter(slotStr => {
+    const filteredSlots = formattedBaseSlots.filter(slotStr => {
       const [slotStartStr, slotEndStr] = slotStr.split('-');
       const slotStartMinutes = parseInt(slotStartStr.split(':')[0]) * 60 + parseInt(slotStartStr.split(':')[1]);
       const slotEndMinutes = parseInt(slotEndStr.split(':')[0]) * 60 + parseInt(slotEndStr.split(':')[1]);
@@ -1840,63 +1808,51 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
       });
     });
 
-    // Fetch existing appointments to filter out booked slots
-    const fetchExistingAppointments = async () => {
-      try {
-        const response = await fetch(`http://localhost:2010/api/appointments/doctor/${doctorId}/date/${appointmentDate}`);
-        if (!response.ok) {
-          if (response.status === 204) {
-            // No content, which means no existing appointments
-            setExistingAppointments([]);
-          } else {
-            const errText = await response.text();
-            throw new Error(`Failed to fetch existing appointments: ${response.status} - ${errText}`);
-          }
-        } else {
-          const data = await response.json();
-          setExistingAppointments(data);
-          const bookedTimes = data
-            .filter(app => app.status === 'Scheduled' || app.status === 'Confirmed')
-            .map(app => formatInstantToTime(app.appointmentTime));
-
-          // Filter out booked times from the available slots
-          const finalAvailableSlots = currentAvailableSlots.filter(slot => {
-            const [slotStart] = slot.split('-');
-            return !bookedTimes.includes(slotStart);
-          });
-
-          setAvailableTimeSlots(finalAvailableSlots);
-
-          if (finalAvailableSlots.length === 0 && !availabilityError) {
-            setAppointmentsError("All slots are booked for this day or no availability.");
-          } else {
-            setAppointmentsError(null);
-          }
+    fetch(`http://localhost:2010/api/appointments/doctor/${doctorId}/date/${appointmentDate}`)
+      .then(res => {
+        if (!res.ok) {
+          if (res.status === 204) return [];
+          return res.text().then(text => { throw new Error(text); });
         }
-      } catch (err) {
-        setAppointmentsError(err.message || "Failed to load available slots.");
-      } finally {
-        setLoadingAppointments(false);
-      }
-    };
-    fetchExistingAppointments();
+        return res.json();
+      })
+      .then(existingApps => {
+        setExistingAppointments(existingApps);
+        const bookedTimes = existingApps
+          .filter(app => app.status === 'Scheduled' || app.status === 'Confirmed')
+          .map(app => formatInstantToTime(app.appointmentTime));
+
+        const finalAvailableSlots = filteredSlots.filter(slot => {
+          const [slotStart] = slot.split('-');
+          return !bookedTimes.includes(slotStart);
+        });
+
+        setAvailableTimeSlots(finalAvailableSlots);
+
+        if (finalAvailableSlots.length === 0 && !availabilityError) {
+          setAppointmentsError('All slots are booked or unavailable.');
+        } else {
+          setAppointmentsError(null);
+        }
+      })
+      .catch(err => setAppointmentsError(err.message || 'Failed to load slots.'))
+      .finally(() => setLoadingAppointments(false));
   }, [appointmentDate, doctorId, doctorAvailability, doctorName]);
 
-  // Function to always create a new medical record with more data
+  // Create Medical Record helper
   const createMedicalRecord = async (patientId, doctorId, reason) => {
-    // Generate some random or mock data for the record
-    const mockDiagnosis = ['Healthy', 'Mild Strain', 'Inflammation', 'Degenerative disc disease', 'Routine Check-up'][Math.floor(Math.random() * 5)];
-    const mockTreatment = ['Continue current lifestyle', 'Physical therapy', 'Prescribe anti-inflammatory medication', 'Suggest follow-up in 6 months', 'Referral to specialist'][Math.floor(Math.random() * 5)];
-    const mockNotes = ['Normal vitals, no concerns.', 'Patient reports no pain.', 'Discussed prevention methods.', 'Patient appears to be in good health.'][Math.floor(Math.random() * 4)];
-    
+    const diagnoses = ['Healthy', 'Mild Strain', 'Inflammation', 'Degenerative disc disease', 'Routine Check-up'];
+    const treatments = ['Continue current lifestyle', 'Physical therapy', 'Prescribe anti-inflammatory medication', 'Suggest follow-up in 6 months', 'Referral to specialist'];
+    const notesArr = ['Normal vitals, no concerns.', 'Patient reports no pain.', 'Discussed prevention methods.', 'Patient appears to be in good health.'];
+
     const payload = {
-      patient_id: patientId, // Changed to match the user's requested field name
+      patient_id: patientId,
       doctor_id: doctorId,
       record_date: new Date().toISOString(),
       chief_complaint: reason,
-      diagnosis: mockDiagnosis,
-      treatment_plan: mockTreatment,
-      notes: mockNotes,
+      diagnosis: diagnoses[Math.floor(Math.random() * diagnoses.length)],
+      treatment_plan: treatments[Math.floor(Math.random() * treatments.length)],
+      notes: notesArr[Math.floor(Math.random() * notesArr.length)],
       created_by_user_id: frontDeskUser.userId,
     };
 
@@ -1907,56 +1863,63 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to create medical record: ${response.status} - ${errorText}`);
+      const text = await response.text();
+      throw new Error(`Failed to create medical record: ${response.status} - ${text}`);
     }
 
     const createdRecord = await response.json();
-    return createdRecord.id || createdRecord._id; // Return the new record's ID
+    return createdRecord.id || createdRecord._id;
   };
 
+  // Form submit - book appointment
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setSubmissionStatus(null);
     setSubmissionMessage('');
 
+    // Validate required fields
     if (!patientIdInput || !appointmentDate || !appointmentTime || !reasonForVisit || !doctorName || !doctorId) {
       setSubmissionStatus('error');
-      setSubmissionMessage('Please fill in all required fields (including Patient, Doctor ID).');
+      setSubmissionMessage('Please fill in all required fields.');
       setLoading(false);
       return;
     }
+
     if (availabilityError || appointmentsError) {
       setSubmissionStatus('error');
-      setSubmissionMessage(availabilityError || appointmentsError || 'Cannot book due to availability issues.');
+      setSubmissionMessage(availabilityError || appointmentsError);
       setLoading(false);
       return;
     }
+
     if (!availableTimeSlots.includes(appointmentTime)) {
       setSubmissionStatus('error');
-      setSubmissionMessage('Selected time slot is not available. Please choose from the list.');
+      setSubmissionMessage('Selected time slot not available.');
       setLoading(false);
       return;
     }
 
     try {
-      // Create a new medical record for the patient with additional data
       const medicalRecordId = await createMedicalRecord(patientIdInput, doctorId, reasonForVisit);
 
-      const dateTimeString = `${appointmentDate}T${appointmentTime.split('-')[0]}:00`;
-      const appointmentTimeInstant = dayjs(dateTimeString).toISOString();
+      // Prepare ISO 8601 strings for appointmentDate and appointmentTime (Instant compatible)
+      const formattedAppointmentDate = dayjs(appointmentDate).startOf('day').toISOString(); // "YYYY-MM-DDT00:00:00Z"
+      const slotStart = appointmentTime.split('-')[0];
+      const formattedAppointmentTime = dayjs(`1970-01-01T${slotStart}:00`).toISOString(); // Dummy date with time
 
       const payload = {
         patientId: patientIdInput,
         doctorId,
         medicalRecordId,
-        appointmentDate,
-        appointmentTime: appointmentTimeInstant,
+        appointmentDate: formattedAppointmentDate,  // camelCase
+        appointmentTime: formattedAppointmentTime,  // camelCase
         reasonForVisit,
         status: 'Scheduled',
         bookedByUserId: frontDeskUser.userId,
         roomNumber: roomNumber || null,
+        notes: reasonForVisit,
       };
 
       console.log('Submitting appointment:', payload);
@@ -1968,16 +1931,16 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to book appointment: ${response.status} - ${errorText}`);
+        const text = await response.text();
+        throw new Error(`Failed to book appointment: ${response.status} - ${text}`);
       }
 
       const result = await response.json();
-      console.log('Appointment booked successfully:', result);
+      console.log('Appointment booked:', result);
       setSubmissionStatus('success');
       setSubmissionMessage('Appointment booked successfully!');
 
-      // Reset form fields after successful submission
+      // Reset form
       setSelectedPatientObject(null);
       setPatientIdInput('');
       if (!doctorId) setDoctorName('');
@@ -1988,15 +1951,14 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
       setAvailableTimeSlots([]);
       setExistingAppointments([]);
     } catch (err) {
-      console.error('Error booking appointment:', err);
+      console.error('Booking error:', err);
       setSubmissionStatus('error');
-      setSubmissionMessage(err.message || 'Failed to book appointment. Please try again.');
+      setSubmissionMessage(err.message || 'Failed to book appointment.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Custom filter for Autocomplete to search by both name and ID
   const filterOptions = createFilterOptions({
     matchFrom: 'any',
     stringify: (option) => `${option.first_name} ${option.last_name} ${option._id}`,
@@ -2068,13 +2030,13 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
             fullWidth
             required
             value={doctorName}
-            onChange={(e) => setDoctorName(e.target.value)}
             disabled={!!doctorId}
             sx={{ mb: 3 }}
             InputProps={{
               startAdornment: <LocalHospitalIcon sx={{ mr: 1, color: 'action.active' }} />,
             }}
           />
+
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Appointment Date"
@@ -2085,7 +2047,7 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
                 textField: {
                   fullWidth: true,
                   required: true,
-                  variant: "outlined",
+                  variant: 'outlined',
                   sx: { mb: 3 },
                   InputLabelProps: { shrink: true },
                   InputProps: {
@@ -2100,47 +2062,35 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
             <AccessTimeIcon sx={{ mr: 1, color: 'action.active' }} />
             Select Appointment Time
           </Typography>
-          {loadingAvailability || loadingAppointments ? (
+          {(loadingAvailability || loadingAppointments) ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100, mb: 3 }}>
               <CircularProgress size={30} />
               <Typography sx={{ ml: 2 }}>Loading slots...</Typography>
             </Box>
+          ) : availabilityError || appointmentsError ? (
+            <Alert severity="warning" sx={{ mb: 3 }}>
+              {availabilityError || appointmentsError}
+            </Alert>
           ) : (
-            <>
-              {availabilityError || appointmentsError ? (
-                <Alert severity="warning" sx={{ mb: 3 }}>
-                  {availabilityError || appointmentsError}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+              {availableTimeSlots.length === 0 ? (
+                <Alert severity="info" sx={{ flexGrow: 1 }}>
+                  No slots available for this day.
                 </Alert>
               ) : (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-                  {availableTimeSlots.length === 0 ? (
-                    <Alert severity="info" sx={{ flexGrow: 1 }}>
-                      No slots available for this day.
-                    </Alert>
-                  ) : (
-                    availableTimeSlots.map((slot) => (
-                      <Button
-                        key={slot}
-                        variant={appointmentTime === slot ? 'contained' : 'outlined'}
-                        color="primary"
-                        onClick={() => setAppointmentTime(slot)}
-                        sx={{
-                          py: 0.5,
-                          px: 2,
-                          borderRadius: 2,
-                          minWidth: 'auto',
-                          '&.Mui-disabled': {
-                            opacity: 0.5,
-                          }
-                        }}
-                      >
-                        {slot}
-                      </Button>
-                    ))
-                  )}
-                </Box>
+                availableTimeSlots.map((slot) => (
+                  <Button
+                    key={slot}
+                    variant={appointmentTime === slot ? 'contained' : 'outlined'}
+                    color="primary"
+                    onClick={() => setAppointmentTime(slot)}
+                    sx={{ py: 0.5, px: 2, borderRadius: 2, minWidth: 'auto' }}
+                  >
+                    {slot}
+                  </Button>
+                ))
               )}
-            </>
+            </Box>
           )}
 
           <TextField
@@ -2154,9 +2104,12 @@ const FrontDeskBookAppointmentPage = ({ doctorId, patientId, onBack, frontDeskUs
             onChange={(e) => setReasonForVisit(e.target.value)}
             sx={{ mb: 3 }}
             InputProps={{
-              startAdornment: <DescriptionIcon sx={{ mr: 1, color: 'action.active', alignSelf: 'flex-start', mt: 1 }} />,
+              startAdornment: (
+                <DescriptionIcon sx={{ mr: 1, color: 'action.active', alignSelf: 'flex-start', mt: 1 }} />
+              ),
             }}
           />
+
           <TextField
             label="Room Number (Optional)"
             variant="outlined"
@@ -2203,7 +2156,7 @@ FrontDeskBookAppointmentPage.propTypes = {
   patientId: PropTypes.string,
   onBack: PropTypes.func.isRequired,
   frontDeskUser: PropTypes.shape({
-    userId: PropTypes.string,
+    userId: PropTypes.string.isRequired,
     name: PropTypes.string,
     email: PropTypes.string,
   }).isRequired,

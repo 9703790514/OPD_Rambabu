@@ -1926,12 +1926,9 @@ import WcIcon from '@mui/icons-material/Wc';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ScienceIcon from '@mui/icons-material/Science';
 
-// Import the new prescriptions component
 import LabTechnicianPrescriptions from './LabTechnicianPrescriptions';
-// Import the new test reports component
 import LabTechnicianTestReports from './LabTechnicianTestReports';
 
-// --- Styled Components for Visual Enhancement ---
 
 const PageContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -1997,14 +1994,14 @@ const InfoBox = styled(Box)(({ theme }) => ({
 
 const PatientDetailsPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  marginBottom: theme.spacing(6), // Increased space here
+  marginBottom: theme.spacing(6),
   borderRadius: theme.shape.borderRadius * 2,
   background: 'linear-gradient(145deg, #e3f2fd, #bbdefb)',
   boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-  border: `1px solid ${theme.palette.primary.light}`, // Added a subtle border
+  border: `1px solid ${theme.palette.primary.light}`, 
   position: 'relative',
   overflow: 'hidden',
-  '&:before': { // Added a decorative element
+  '&:before': { 
     content: '""',
     position: 'absolute',
     top: 0,
@@ -2037,7 +2034,6 @@ const NoRecordsPaper = styled(Paper)(({ theme }) => ({
   marginTop: theme.spacing(4),
 }));
 
-// --- Main Component ---
 
 const LabTechnicianMedicalRecords = ({ patientId, doctorIdFromAppointment, onBack, labTechnician, appointmentId }) => {
   const [medicalRecord, setMedicalRecord] = useState(null);
@@ -2269,7 +2265,6 @@ const LabTechnicianMedicalRecords = ({ patientId, doctorIdFromAppointment, onBac
         </PatientDetailsPaper>
       )}
 
-      {/* Single Medical Record Display */}
       {medicalRecord ? (
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={8} md={6}>

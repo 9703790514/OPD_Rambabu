@@ -1,83 +1,88 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button,
-  CircularProgress // Import CircularProgress for loading indicator
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+  Alert,
+  TextField,
+  TablePagination,
 } from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import PaymentIcon from '@mui/icons-material/Payment';
-import PersonIcon from '@mui/icons-material/Person';
 
 const BillingDeskPatientAccounts = ({ billingDeskUser }) => {
-  // State to hold dynamic patient accounts data
-  const [patientAccountsData, setPatientAccountsData] = useState([]);
+  // State to hold dynamic bill items data
+  const [billItemsData, setBillItemsData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Pagination states
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    const fetchPatientAccounts = async () => {
+    const fetchBillItems = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('http://localhost:2008/api/patients');
+        const response = await fetch('http://localhost:2009/api/bill-items');
         if (!response.ok) {
-          throw new Error(`Failed to fetch patient data: ${response.status} ${response.statusText}`);
+          throw new Error(`Failed to fetch bill items: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-
-        // Log the fetched raw patient data to the console
-        console.log("Fetched raw patient data:", data);
-
-        // Map fetched data to the required structure for patient accounts
-        // Assuming each fetched patient has at least 'id', 'first_name', 'last_name'
-        // And we'll simulate 'currentBalance', 'lastActivity', 'status' for now
-        const mappedData = data.map((patient, index) => ({
-          id: patient.id, // Use the actual patient ID from the backend
-          patientId: patient.customId ? `P-${String(patient.customId).padStart(3, '0')}` : `P-N/A`, // Use customId if available
-          patientName: `${patient.first_name || ''} ${patient.last_name || ''}`.trim() || 'N/A',
-          currentBalance: (index % 2 === 0) ? 0.00 : (Math.random() * 1000 + 100).toFixed(2), // Simulate balance
-          lastActivity: `2025-07-${28 - (index % 5)} (Invoice)`, // Simulate last activity
-          status: (index % 3 === 0) ? 'Clear' : (index % 3 === 1 ? 'Outstanding' : 'Overdue'), // Simulate status
-        }));
-        setPatientAccountsData(mappedData);
+        setBillItemsData(data);
+        setFilteredData(data);
       } catch (err) {
-        console.error("Error fetching patient accounts:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPatientAccounts();
-  }, []); // Empty dependency array means this effect runs once on mount
+    fetchBillItems();
+  }, []);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Clear': return 'success';
-      case 'Outstanding': return 'info';
-      case 'Overdue': return 'error';
-      default: return 'default';
+  // Update filteredData when searchQuery or billItemsData changes
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredData(billItemsData);
+    } else {
+      const lowerQuery = searchQuery.toLowerCase();
+      const filtered = billItemsData.filter((item) =>
+        item.description?.toLowerCase().includes(lowerQuery)
+      );
+      setFilteredData(filtered);
     }
+    setPage(0); // Reset to first page on new search
+  }, [searchQuery, billItemsData]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
-  const handleViewAccountHistory = (patientId) => {
-    console.log(`View account history for Patient ID: ${patientId}`);
-    // Implement logic to view detailed account history
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
-  const handleProcessPayment = (patientId) => {
-    console.log(`Process payment for Patient ID: ${patientId}`);
-    // Implement logic to initiate payment processing for this patient
-  };
+  // Calculate the paginated rows to display
+  const paginatedRows = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   if (loading) {
     return (
-      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%', textAlign: 'center' }}>
-        <CircularProgress sx={{ mt: 5 }} />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 6 }}>
+        <CircularProgress color="secondary" />
         <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
-          Loading patient accounts...
+          Loading bill items...
         </Typography>
       </Box>
     );
@@ -85,86 +90,168 @@ const BillingDeskPatientAccounts = ({ billingDeskUser }) => {
 
   if (error) {
     return (
-      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%', textAlign: 'center' }}>
-        <Typography variant="h6" color="error" sx={{ mt: 5 }}>
-          Error: {error}
-        </Typography>
+      <Box sx={{ p: 6, textAlign: 'center' }}>
+        <Alert severity="error" sx={{ mb: 3, backgroundColor: '#fdecea', color: '#b71c1c' }}>
+          {error}
+        </Alert>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-          Failed to load patient account data. Please try again later.
+          Failed to load bill items data. Please try again later.
         </Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
-      <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold', color: 'primary.dark' }}>
-        Patient Accounts
+    <Box sx={{ p: { xs: 3, md: 6 }, maxWidth: 1200, mx: 'auto', width: '100%', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        sx={{
+          mb: 5,
+          fontWeight: 900,
+          color: '#303f9f', // Indigo
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          textShadow: '0 2px 6px rgba(48,63,159,0.2)',
+        }}
+      >
+        Patient Bill Items
       </Typography>
 
-      <Paper elevation={6} sx={{ p: { xs: 2, md: 4 }, borderRadius: 3, background: 'linear-gradient(145deg, #ffffff, #f0f2f5)', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: 'primary.main' }}>
-          Overview of Patient Balances
+      {/* Search Bar */}
+      <Box sx={{ mb: 4, maxWidth: 480, mx: 'auto' }}>
+        <TextField
+          label="Search by Treatment Name"
+          variant="outlined"
+          fullWidth
+          size="medium"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Type to filter bill items by description..."
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 3,
+              backgroundColor: '#f3f4fb',
+              transition: 'box-shadow 0.3s ease',
+              '&:hover fieldset': {
+                borderColor: '#3f51b5',
+                boxShadow: '0 0 8px rgba(63,81,181,0.3)',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#303f9f',
+                boxShadow: '0 0 12px rgba(48,63,159,0.5)',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: '#3f51b5',
+              fontWeight: 600,
+            },
+          }}
+        />
+      </Box>
+
+      <Paper
+        elevation={12}
+        sx={{
+          p: { xs: 3, md: 5 },
+          borderRadius: 5,
+          background: 'linear-gradient(135deg, #e8eaf6, #c5cae9)',
+          boxShadow: '0 20px 50px rgba(63,81,181,0.15)',
+          border: '1px solid #9fa8da',
+        }}
+      >
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            mb: 4,
+            fontWeight: 'bold',
+            color: '#283593',
+            letterSpacing: '0.07em',
+            textShadow: '0 1px 3px rgba(40,53,147,0.2)',
+          }}
+        >
+          Overview of Bill Items
         </Typography>
 
-        <TableContainer>
-          <Table sx={{ minWidth: 800 }} aria-label="patient accounts table">
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#e3f2fd' }}>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Patient ID</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Patient Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Current Balance</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Last Activity</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'primary.dark' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {patientAccountsData.map((row) => (
-                <TableRow
-                  key={row.id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.patientId}
-                  </TableCell>
-                  <TableCell><PersonIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />{row.patientName}</TableCell>
-                  <TableCell>₹{row.currentBalance}</TableCell>
-                  <TableCell>{row.lastActivity}</TableCell>
-                  <TableCell>
-                    <Chip label={row.status} color={getStatusColor(row.status)} size="small" />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<VisibilityIcon />}
-                      onClick={() => handleViewAccountHistory(row.id)}
-                      sx={{ mr: 1 }}
+        {filteredData.length === 0 ? (
+          <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 6, fontStyle: 'italic' }}>
+            No bill items found.
+          </Typography>
+        ) : (
+          <>
+            <TableContainer
+              sx={{
+                maxHeight: 600,
+                borderRadius: 4,
+                '&::-webkit-scrollbar': {
+                  width: 8,
+                  height: 8,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: 'rgba(48,63,159,0.3)',
+                  borderRadius: 4,
+                },
+              }}
+            >
+              <Table stickyHeader aria-label="bill items table" sx={{ minWidth: 700 }}>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: '#3949ab' }}>
+                    <TableCell sx={{ fontWeight: 900, color: 'black' }}>Treatment Name</TableCell>
+                    <TableCell sx={{ fontWeight: 900, color: 'black', width: 100, textAlign: 'center' }}>
+                      Quantity
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 900, color: 'black', width: 140, textAlign: 'right' }}>
+                      Unit Price (₹)
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 900, color: 'black' }}>Notes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginatedRows.map((item) => (
+                    <TableRow
+                      key={item.id}
+                      hover
+                      sx={{
+                        '&:nth-of-type(odd)': {
+                          backgroundColor: '#e8eaf6',
+                        },
+                        '&:last-child td, &:last-child th': {
+                          border: 0,
+                        },
+                        td: { verticalAlign: 'top', fontSize: '0.95rem', color: '#283593' },
+                      }}
                     >
-                      View History
-                    </Button>
-                    {parseFloat(row.currentBalance) > 0 && ( // Only show "Process Payment" if there's a balance
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<PaymentIcon />}
-                        onClick={() => handleProcessPayment(row.id)}
-                      >
-                        Process Payment
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      <TableCell>{item.description || 'N/A'}</TableCell>
+                      <TableCell align="center">{item.quantity ?? '-'}</TableCell>
+                      <TableCell align="right">₹{item.unitPrice?.toFixed(2) ?? '-'}</TableCell>
+                      <TableCell sx={{ fontStyle: 'italic', color: '#5c6bc0' }}>{item.notes || '-'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* Pagination Component */}
+            <TablePagination
+              component="div"
+              count={filteredData.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              labelRowsPerPage="Rows per page"
+              sx={{ mt: 2 }}
+            />
+          </>
+        )}
       </Paper>
 
       <Box sx={{ mt: 6, opacity: 0.7, textAlign: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
-          View patient account balances, payment history, and financial statements.
+        <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+          View detailed bill items including service descriptions, pricing, and related notes.
         </Typography>
       </Box>
     </Box>

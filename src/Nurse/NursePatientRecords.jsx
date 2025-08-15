@@ -516,8 +516,17 @@ const App = () => {
     }
 
     // Filter to today's appointments only
-    const todayISO = new Date().toISOString().slice(0, 10);
-    const todaysAppointments = appointments.filter(appt => appt.appointmentDate === todayISO);
+   // Get today's date in local time as YYYY-MM-DD
+const today = new Date();
+const todayDateOnly = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+const todaysAppointments = appointments.filter(appt => {
+  if (!appt.appointmentDate) return false;
+  const apptDate = new Date(appt.appointmentDate); // parse Instant
+  const apptDateOnly = `${apptDate.getFullYear()}-${String(apptDate.getMonth() + 1).padStart(2,'0')}-${String(apptDate.getDate()).padStart(2,'0')}`;
+  return apptDateOnly === todayDateOnly;
+});
+
 
     return (
         <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 960, mx: 'auto', width: '100%' }}>

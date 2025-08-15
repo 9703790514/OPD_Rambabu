@@ -221,7 +221,7 @@ const ServicesPage = () => {
           sx={{
             mb: 7,
             width: '100%',
-            maxWidth: 600,
+            maxWidth: 3000,
             bgcolor: 'background.paper',
             borderRadius: 20,
             boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
@@ -259,7 +259,7 @@ const ServicesPage = () => {
           />
         </Box>
 
-        <Grid container spacing={5} justifyContent="center" sx={{ maxWidth: 1400 }}>
+        <Grid container spacing={5} justifyContent="center" sx={{ maxWidth: 1400 ,height : 1500}}>
           {filteredServices.length === 0 ? (
             <Typography variant="h6" color="text.secondary" sx={{ mt: 4, fontWeight: 600 }}>
               No services found matching your search.
@@ -272,6 +272,7 @@ const ServicesPage = () => {
                   sx={{
                     height: '100%',
                     display: 'flex',
+                    width : "1300px",
                     flexDirection: 'column',
                     borderRadius: 5,
                     transition: 'all 0.4s ease',

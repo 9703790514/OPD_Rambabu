@@ -704,6 +704,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import SvgIcon from '@mui/material/SvgIcon';
+import Divider from '@mui/material/Divider';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 
 import LabTechnicianDashboardOverview from './LabTechnicianDashboardOverview';
 import LabTechnicianSampleManagement from './LabTechnicianSampleManagement';
@@ -804,91 +809,220 @@ function LabTechnicianDashboardPageContent({ currentSegment, loading, labTechnic
     case 'quality-control': return <LabTechnicianQualityControl labTechnician={labTechnician} />;
     case 'schedule': return <LabTechnicianSchedule labTechnician={labTechnician} />;
     case 'settings': return <LabTechnicianSettings labTechnician={labTechnician} />;
-    default:
+    default :
       // Default dashboard view with welcome message and cards
       return (
-        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
-          <Typography variant="h4" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
-            Welcome to the Lab Technician Dashboard
-          </Typography>
-          <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 6 }}>
-            Your role is crucial to the hospital's operations. Use this dashboard to manage your daily tasks, from sample processing to quality control.
-          </Typography>
-          <Grid container spacing={4} alignItems="stretch">
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="https://placehold.co/600x400/D4E0F0/4A90E2?text=Sample+Analysis"
-                  alt="Sample Management"
-                  sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
-                />
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Box sx={{ bgcolor: 'primary.light', p: 1, borderRadius: '50%', mr: 2, display: 'flex' }}>
-                       <SvgIcon component={ScienceIcon} sx={{ color: 'primary.main', fontSize: 32 }} />
-                    </Box>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Sample Management
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Track and manage all incoming patient samples. Ensure proper labeling, storage, and preparation for analysis to maintain integrity.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="https://placehold.co/600x400/EAF9F6/50E3C2?text=Reporting"
-                  alt="Test Results"
-                  sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
-                />
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Box sx={{ bgcolor: '#d4f4e2', p: 1, borderRadius: '50%', mr: 2, display: 'flex' }}>
-                      <SvgIcon component={AssignmentTurnedInIcon} sx={{ color: '#388e3c', fontSize: 32 }} />
-                    </Box>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Test Results
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Record and submit test results to patient records. This section helps you verify and finalize diagnostic findings for doctors.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="https://placehold.co/600x400/F0D4D4/D0021B?text=Quality+Assurance"
-                  alt="Quality Control"
-                  sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
-                />
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Box sx={{ bgcolor: '#f4d4d4', p: 1, borderRadius: '50%', mr: 2, display: 'flex' }}>
-                      <SvgIcon component={CheckCircleOutlineIcon} sx={{ color: 'error.main', fontSize: 32 }} />
-                    </Box>
-                    <Typography gutterBottom variant="h6" component="div">
-                      Quality Control
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Monitor the performance of lab equipment and processes. Log quality control data to ensure accuracy and compliance with standards.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
+       <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto', width: '100%' }}>
+      {/* Header */}
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        sx={{ mb: 4, fontWeight: 'bold', color: 'primary.main' }}
+      >
+        Welcome to the Lab Technician Dashboard
+      </Typography>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        align="center"
+        sx={{ mb: 6, maxWidth: 760, mx: 'auto', fontSize: { xs: '1rem', md: '1.125rem' } }}
+      >
+        Your role is crucial to the hospital's operations. Use this dashboard to efficiently manage your daily
+        tasks, from handling patient samples to ensuring rigorous quality control and accurate reporting.
+      </Typography>
+
+      {/* Feature Cards Grid */}
+      <Grid container spacing={4} alignItems="stretch">
+        {/* Sample Management */}
+        <Grid item xs={12} sm={6} md={4}>
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: 3,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          >
+            <CardMedia
+              component="img"
+              height="160"
+              image="https://placehold.co/600x400/D4E0F0/4A90E2?text=Sample+Management"
+              alt="Sample Management"
+              sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+            />
+            <CardContent sx={{ flexGrow: 1, p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ bgcolor: 'primary.light', p: 1.25, borderRadius: '50%', mr: 2, display: 'flex' }}>
+                  <SvgIcon component={ScienceIcon} sx={{ color: 'primary.main', fontSize: 36 }} />
+                </Box>
+                <Typography gutterBottom variant="h6" component="div" fontWeight="bold">
+                  Sample Management
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Track and manage all incoming patient samples with precision. Ensure accurate labeling, proper storage,
+                and timely preparation for analysis to maintain sample integrity and workflow efficiency.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Test Results */}
+        <Grid item xs={12} sm={6} md={4}>
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: 3,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          >
+            <CardMedia
+              component="img"
+              height="160"
+              image="https://placehold.co/600x400/EAF9F6/50E3C2?text=Reporting"
+              alt="Test Results"
+              sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+            />
+            <CardContent sx={{ flexGrow: 1, p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ bgcolor: '#d4f4e2', p: 1.25, borderRadius: '50%', mr: 2, display: 'flex' }}>
+                  <SvgIcon component={AssignmentTurnedInIcon} sx={{ color: '#388e3c', fontSize: 36 }} />
+                </Box>
+                <Typography gutterBottom variant="h6" component="div" fontWeight="bold">
+                  Test Results
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Efficiently record, verify, and submit test results directly to patient records. Collaborate with doctors to
+                ensure diagnostic findings are complete, accurate, and delivered promptly.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Quality Control */}
+        <Grid item xs={12} sm={6} md={4}>
+          <Card
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              borderRadius: 3,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          >
+            <CardMedia
+              component="img"
+              height="160"
+              image="https://placehold.co/600x400/F0D4D4/D0021B?text=Quality+Assurance"
+              alt="Quality Control"
+              sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+            />
+            <CardContent sx={{ flexGrow: 1, p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ bgcolor: '#f4d4d4', p: 1.25, borderRadius: '50%', mr: 2, display: 'flex' }}>
+                  <SvgIcon component={CheckCircleOutlineIcon} sx={{ color: 'error.main', fontSize: 36 }} />
+                </Box>
+                <Typography gutterBottom variant="h6" component="div" fontWeight="bold">
+                  Quality Control
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+                Monitor and log quality control checks on laboratory equipment and procedures. Ensure compliance with regulatory
+                standards to maintain the accuracy and reliability of results.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Divider before FAQ */}
+      <Divider sx={{ my: 6 }} />
+
+      {/* FAQ Section */}
+      <Box sx={{ maxWidth: 960, mx: 'auto' }}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 700, color: 'primary.main', mb: 4 }}>
+          Frequently Asked Questions
+        </Typography>
+
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="faq1-content"
+            id="faq1-header"
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              How do I log a new sample into the system?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography color="text.secondary">
+              Navigate to the Sample Management section and select the ‘Add New Sample’ button. Fill in the patient details,
+              sample type, and collection date, then submit to add the sample to the tracking system.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="faq2-content"
+            id="faq2-header"
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              How can I verify and submit test results?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography color="text.secondary">
+              In the Test Results section, review pending test results carefully. Use the validation tools provided to cross-check data
+              before submitting to the patient’s medical records.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="faq3-content"
+            id="faq3-header"
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              What procedures are involved in quality control?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography color="text.secondary">
+              Quality control includes routine checks of lab equipment calibration, reagent validity, and process adherence.
+              All findings should be accurately logged with timestamps and technician comments.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="faq4-content"
+            id="faq4-header"
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>
+              Who do I contact if I notice irregularities in test results?
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography color="text.secondary">
+              Immediately inform your supervisor and the quality assurance team through the Contact Us section. Timely reporting
+              ensures patient safety and maintains hospital standards.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
+      </Box>
+    </Box>
       );
   }
 }

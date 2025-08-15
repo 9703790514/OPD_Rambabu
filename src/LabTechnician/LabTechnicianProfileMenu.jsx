@@ -203,9 +203,7 @@ function LabTechnicianProfileMenu({ user, onLogout, onProfilePicChange, loading 
           <Typography variant="body2" sx={{ mb: 0.5 }} noWrap>
             <strong>Username:</strong> {user.name || 'N/A'}
           </Typography>
-          <Typography variant="body2" sx={{ mb: 0.5 }} noWrap>
-            <strong>Phone Number:</strong> {user.phoneNumber || 'N/A'}
-          </Typography>
+      
           <Typography variant="body2" noWrap>
             <strong>Email:</strong> {user.email || 'N/A'}
           </Typography>
